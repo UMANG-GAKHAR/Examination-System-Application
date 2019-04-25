@@ -1,0 +1,90 @@
+Imports System.Data.OleDb
+Public Class Exam
+    Dim ds As New DataSet
+    Dim ds1 As New DataSet
+    Dim dt As New DataTable
+    Dim dr As OleDbDataReader
+    Dim adp As OleDbDataAdapter
+    Dim adp1 As OleDbDataAdapter
+    Dim cmd As OleDbCommand
+    Dim gRowNum As Integer
+    Dim mystring As String
+    Dim marks As Integer
+
+    Private Sub Exam_Load(sender As System.Object, e As System.EventArgs) Handles MyBase.Load
+        Call pConnectDb()
+        Call pLoadcmbSub()
+        radOpa.Checked = False
+        radOpb.Checked = False
+        radOpc.Checked = False
+        radOpd.Checked = False
+        lblAns.Visible = False
+        txtAns.Visible = False
+        marks = 0
+    End Sub
+    Private Sub pLoadcmbSub()
+        adp1 = New OleDbDataAdapter("Select SubSid,SubNam from tbSbj order by SubNam", dbcon)
+        adp1.Fill(ds1)
+        cmbSub.DataSource = ds1.Tables(0)
+        cmbSub.DisplayMember = "SubNam"
+        cmbSub.ValueMember = "SubSid"
+
+    End Sub
+
+    Private Sub cmbSub_SelectedIndexChanged(sender As System.Object, e As System.EventArgs) Handles cmbSub.SelectedIndexChanged
+        Dim sSql As String
+        If cmbSub.SelectedIndex > 0 Then
+            sSql = "select * from tbQus where SubSid=" & cmbSub.SelectedValue
+            MsgBox(sSql)
+            adp = New OleDbDataAdapter(sSql, dbcon)
+            adp.Fill(ds)
+            dt = ds.Tables(0)
+            If dt.Rows.Count = 0 Then Exit Sub
+            'Dim myrow As DataRow = dt.Rows(4)
+            'txtQue.Text = myrow("StuQue")
+            'txtOpa.Text = myrow("StuOpa")
+            'txtOpb.Text = myrow("StuOpb")
+            'txtOpc.Text = myrow("StuOpc")
+            'txtOpd.Text = myrow("StuOpd")
+            'txtAns.Text = myrow("StuAns")
+            gRowNum = 0   'initialise ist row number in data table
+            Call showQn(gRowNum)
+        End If
+    End Sub
+    Private Sub showQn(nRnum As Integer)
+        Dim myrow As DataRow = dt.Rows(nRnum)
+        txtQue.Text = myrow("StuQue")
+        radOpa.Text = myrow("StuOpa")
+        radOpb.Text = myrow("StuOpb")
+        radOpc.Text = myrow("StuOpc")
+        radOpd.Text = myrow("StuOpd")
+        txtAns.Text = myrow("StuAns")
+
+    End Sub
+
+    Private Sub btnNext_Click(sender As System.Object, e As System.EventArgs) Handles btnNext.Click
+        Dim dt2 As Integer = dt.Rows.Count
+        'MsgBox(dt2)
+        If mystring = txtAns.Text Then
+            marks = marks + 1
+        Else
+            marks = marks - 1
+        End If
+        'If dt2 = "8" Then
+        '    MsgBox(marks)
+        'End If
+        gRowNum = gRowNum + 1
+        If gRowNum < dt2 Then
+            Call showQn(gRowNum)
+        Else
+            btnNext.Enabled = False
+            lblRst.Text = " YOU SCORED " + "" + marks.ToString + "" + "" + "/10"
+        End If
+
+    End Sub
+
+    Private Sub radOpa_Click(sender As Object, e As System.EventArgs) Handles radOpa.Click, radOpb.Click, radOpc.Click, radOpd.Click
+        mystring = sender.Text
+    End Sub
+
+End Class
