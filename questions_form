@@ -1,0 +1,77 @@
+Imports System.Data.OleDb
+Public Class Question
+    Dim ds As New DataSet
+    Dim dt As DataTable
+    Dim adp As OleDbDataAdapter
+    Dim cmd As OleDbCommand
+
+    Private Sub Question_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        'TODO: This line of code loads data into the 'DbStuDataSet4.tbQus' table. You can move, or remove it, as needed.
+        Me.TbQusTableAdapter1.Fill(Me.DbStuDataSet4.tbQus)
+        'TODO: This line of code loads data into the 'DbStuDataSet3.tbQus' table. You can move, or remove it, as needed.
+        Me.TbQusTableAdapter.Fill(Me.DbStuDataSet3.tbQus)
+        txtStuQid.Focus()
+        'TODO: This line of code loads data into the 'DbStuDataSet2.tbSbj' table. You can move, or remove it, as needed.
+        Me.TbSbjTableAdapter.Fill(Me.DbStuDataSet2.tbSbj)
+        Call pConnectDb()
+    End Sub
+
+
+    Private Sub btnShw_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnShw.Click
+        Dim sSql As String
+        sSql = " Select * from tbQus"
+        ds.Clear()
+        adp = New OleDbDataAdapter(sSql, dbcon)
+        adp.Fill(ds)
+        dgvQue.DataSource = ds.Tables(0)
+        dgvQue.Columns.Item(0).HeaderText = "Subject Id"
+        dgvQue.Columns.Item(1).HeaderText = "Question Id"
+        dgvQue.Columns.Item(2).HeaderText = "Question"
+        dgvQue.Columns.Item(3).HeaderText = "Option A"
+        dgvQue.Columns.Item(4).HeaderText = "Option B"
+        dgvQue.Columns.Item(5).HeaderText = "Option C"
+        dgvQue.Columns.Item(6).HeaderText = "Option D"
+        dgvQue.Columns.Item(7).HeaderText = "Answer"
+    End Sub
+
+    Private Sub btnAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAdd.Click
+        Dim sSql1 As String
+        sSql1 = "Insert into tbQus values( " & txtSubSid.Text & "," & txtStuQid.Text & ", '" & txtStuQue.Text & "', '" & txtStuOpa.Text & "' ,'" & txtStuOpb.Text & "', '" & txtStuOpc.Text & "', '" & txtStuOpd.Text & "','" & txtStuAns.Text & "')"
+        MsgBox(sSql1)
+        cmd = New OleDbCommand(sSql1, dbcon)
+        cmd.ExecuteNonQuery()
+        MsgBox("Data inserted")
+        txtSubSid.Text = ""
+        txtStuQid.Text = ""
+        txtStuQue.Text = ""
+        txtStuOpa.Text = ""
+        txtStuOpb.Text = ""
+        txtStuOpc.Text = ""
+        txtStuOpd.Text = ""
+        txtStuAns.Text = ""
+    End Sub
+
+    Private Sub btnDel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDel.Click
+        Dim sSql2 As String
+        sSql2 = "Delete from tbQus Where StuQid=" & txtStuQid.Text
+        MsgBox(sSql2)
+        cmd = New OleDbCommand(sSql2, dbcon)
+        cmd.ExecuteNonQuery()
+    End Sub
+
+
+
+    Private Sub dgvQue_Click(sender As Object, e As System.EventArgs) Handles dgvQue.Click
+        Dim myrow As DataRow
+        dt = ds.Tables(0)
+        myrow = dt.Rows(dgvQue.CurrentRow.Index)
+        txtSubSid.Text = myrow("SubSid")
+        txtStuQid.Text = myrow("StuQid")
+        txtStuQue.Text = myrow("StuQue")
+        txtStuOpa.Text = myrow("StuOpa")
+        txtStuOpb.Text = myrow("StuOpb")
+        txtStuOpc.Text = myrow("StuOpc")
+        txtStuOpd.Text = myrow("StuOpd")
+        txtStuAns.Text = myrow("StuAns")
+    End Sub
+End Class
