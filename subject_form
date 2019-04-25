@@ -1,0 +1,54 @@
+Imports System.Data.OleDb
+Public Class Subject
+    Dim ds As New DataSet
+    Dim dt As DataTable
+    Dim adp As OleDbDataAdapter
+    Dim cmd As OleDbCommand
+
+
+    Private Sub Form1_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        'TODO: This line of code loads data into the 'DbStuDataSet1.tbSbj' table. You can move, or remove it, as needed.
+        Me.TbSbjTableAdapter.Fill(Me.DbStuDataSet1.tbSbj)
+        Call pConnectDb()
+    End Sub
+
+
+    Private Sub btnAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAdd.Click
+        Dim sSql1 As String
+        sSql1 = "insert into tbSbj values(" & txtSubSid.Text & ", '" & txtSubNam.Text & "')"
+        MsgBox(sSql1)
+        cmd = New OleDbCommand(sSql1, dbcon)
+        cmd.ExecuteNonQuery()
+    End Sub
+
+    Private Sub btnShw_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnShw.Click
+        Dim sSql As String
+        sSql = " Select * from tbSbj"
+        ds.Clear()
+        adp = New OleDbDataAdapter(sSql, dbcon)
+        adp.Fill(ds)
+        dgvSub.DataSource = ds.Tables(0)
+        dgvSub.Columns.Item(0).HeaderText = "Subject Code"
+        dgvSub.Columns.Item(1).HeaderText = "Subject Name"
+    End Sub
+
+    Private Sub btnDel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDel.Click
+        Dim sSql2 As String
+        sSql2 = "Delete from tbSbj Where SubSid=" & txtSubSid.Text
+        MsgBox(sSql2)
+        cmd = New OleDbCommand(sSql2, dbcon)
+        cmd.ExecuteNonQuery()
+    End Sub
+
+
+    Private Sub dgvSub_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles dgvSub.Click
+        Dim myrow As DataRow
+        dt = ds.Tables(0)
+        myrow = dt.Rows(dgvSub.CurrentRow.Index)
+        txtSubSid.Text = myrow("SubSid")
+        txtSubNam.Text = myrow("SubNam")
+
+
+    End Sub
+End Class
+
